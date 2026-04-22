@@ -1,0 +1,32 @@
+{
+  "sourceUrl": "https://example.com/products/sample-shorts",
+  "savedModelId": 1,
+  "allowLocalStorageFallback": false,
+  "publish": false,
+  "categoryId": 6,
+  "subcategoryId": null,
+  "categoryLabel": "Martial Arts Wear",
+  "tryOnPrompt": "Place the extracted garment on the model naturally.",
+  "product": {
+    "title": "Custom Grappling Fight Shorts Wholesale",
+    "slug": "custom-grappling-fight-shorts-wholesale",
+    "category": "Martial Arts Wear",
+    "shortDescription": "Custom grappling shorts for B2B fightwear brands, built for training durability and private-label production.",
+    "description": "SEO copy written by GPT-5.4 goes here.",
+    "seoTitle": "Custom Grappling Fight Shorts Manufacturer",
+    "seoDescription": "Private-label grappling shorts from Pak Homies Industry with wholesale MOQ support and custom branding.",
+    "seoKeywords": "grappling shorts manufacturer, bjj shorts wholesale, private label fight shorts, sialkot pakistan apparel",
+    "material": "Polyester spandex performance blend",
+    "availableSizes": ["S", "M", "L", "XL", "2XL"],
+    "availableColors": ["Black", "White", "Custom"],
+    "samplePrice": "18.00",
+    "weight": "0.350",
+    "manufacturingStory": "Detailed manufacturing notes here.",
+    "slabs": [
+      { "minQty": 50, "maxQty": 99, "pricePerUnit": "12.50", "label": "Starter" },
+      { "minQty": 100, "maxQty": 299, "pricePerUnit": "10.90", "label": "Popular" },
+      { "minQty": 300, "maxQty": null, "pricePerUnit": "9.75", "label": "Bulk" }
+    ]
+  }
+}
+

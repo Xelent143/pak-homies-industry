@@ -1,0 +1,723 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   2D Designer — Mobile-First Stylesheet
+   Target: iOS/Android feel, 44px min-touch targets, safe-area aware
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&display=swap');
+
+/* ── Reset & Root ── */
+
+/* Visibility utilities */
+.d2d-mobile-only {
+    display: none;
+}
+
+.d2d-desktop-only {
+    display: inline-flex;
+}
+
+@media (max-width: 768px) {
+    .d2d-mobile-only {
+        display: inline-flex;
+    }
+
+    .d2d-desktop-only {
+        display: none;
+    }
+}
+
+
+/* Force html/body to not allow horizontal scroll when the 2D designer is open */
+:has(.d2d-root) {
+    overflow: hidden;
+}
+
+.d2d-root {
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    width: 100%;
+    /* 100% NOT 100vw — 100vw includes scrollbar width */
+    max-width: 100vw;
+    /* hard cap */
+    overflow: hidden;
+    /* clip everything — Fabric canvas included */
+    position: fixed;
+    /* take out of document flow entirely */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #0a0a12;
+    color: #e5e5e5;
+    font-family: 'Barlow Condensed', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+/* Clamp the underlying Fabric.js canvas element */
+.d2d-root canvas {
+    max-width: 100% !important;
+    display: block;
+}
+
+
+/* ── Top bar ── */
+.d2d-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    padding-top: env(safe-area-inset-top, 0px);
+    height: calc(52px + env(safe-area-inset-top, 0px));
+    background: rgba(8, 8, 16, 0.92);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 100;
+    flex-shrink: 0;
+}
+
+.d2d-topbar-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #d4af37;
+    max-width: 45vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.d2d-topbar-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+/* ── Main body ── */
+.d2d-body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    min-height: 0;
+    /* critical for flex children to shrink */
+}
+
+/* ── Desktop Sidebar ── */
+.d2d-sidebar {
+    width: 340px;
+    background: rgba(6, 6, 14, 0.96);
+    border-right: 1px solid rgba(255, 255, 255, 0.07);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    flex-shrink: 0;
+    z-index: 15;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 175, 55, 0.3) transparent;
+}
+
+/* Desktop tool button strip inside sidebar */
+.d2d-sidebar .d2d-tool-btn {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 10px;
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    min-height: 38px;
+    width: 100%;
+    text-align: left;
+}
+
+.d2d-sidebar .d2d-tool-btn::after {
+    display: none;
+}
+
+/* No dot indicator on desktop */
+
+.d2d-sidebar .d2d-tool-btn.active {
+    background: rgba(212, 175, 55, 0.14);
+    color: #d4af37;
+    border-left: 3px solid #d4af37;
+    padding-left: 11px;
+}
+
+.d2d-sidebar .d2d-tool-btn svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+
+.d2d-sidebar-section {
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.d2d-sidebar-section h3 {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #d4af37;
+    margin: 0 0 10px;
+}
+
+/* ── Canvas area ── */
+.d2d-canvas-area {
+    flex: 1;
+    min-width: 0;
+    /* prevent canvas from overflowing the remaining space */
+    position: relative;
+    overflow: hidden;
+    background: #0d0d18;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+    background-size: 24px 24px;
+}
+
+.d2d-canvas-wrapper {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MOBILE BOTTOM TAB BAR — the "native app" feel
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.d2d-bottom-toolbar {
+    display: none;
+    /* hidden on desktop */
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(8, 8, 18, 0.97);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+    z-index: 200;
+    flex-shrink: 0;
+    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.d2d-bottom-toolbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 4px;
+    height: 64px;
+    width: 100%;
+}
+
+/* ── Tab buttons ── */
+.d2d-tool-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 6px 0;
+    border: none;
+    background: transparent;
+    color: #555;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: color 0.18s ease, background 0.18s ease, transform 0.12s ease;
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    min-width: 48px;
+    min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+}
+
+.d2d-tool-btn:hover {
+    color: #aaa;
+}
+
+.d2d-tool-btn.active {
+    color: #d4af37;
+}
+
+/* Gold dot indicator under active tab */
+.d2d-tool-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #d4af37;
+}
+
+/* Active press feel */
+.d2d-tool-btn:active {
+    transform: scale(0.92);
+}
+
+.d2d-tool-btn svg {
+    width: 22px;
+    height: 22px;
+    transition: transform 0.15s ease;
+}
+
+.d2d-tool-btn.active svg {
+    transform: scale(1.1);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   BOTTOM SHEET — the mobile drawer that slides up
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.d2d-sheet-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 300;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    animation: d2d-fade-in 0.2s ease;
+}
+
+.d2d-sheet-overlay.open {
+    display: block;
+}
+
+.d2d-sheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 72dvh;
+    background: #111120;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px 20px 0 0;
+    z-index: 301;
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-shadow: 0 -16px 64px rgba(0, 0, 0, 0.8);
+}
+
+.d2d-sheet.open {
+    display: flex;
+    animation: d2d-slide-up 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.d2d-sheet-handle-area {
+    padding: 14px 0 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.d2d-sheet-handle {
+    width: 36px;
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.d2d-sheet-title {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: #d4af37;
+}
+
+.d2d-sheet-body {
+    overflow-y: auto;
+    flex: 1;
+    padding: 14px 16px 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.d2d-sheet-body::-webkit-scrollbar {
+    display: none;
+}
+
+/* ── Animations ── */
+@keyframes d2d-slide-up {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes d2d-fade-in {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SHARED UI COMPONENTS (both mobile & desktop)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Color palette */
+.d2d-color-grid {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 7px;
+}
+
+@media (max-width: 400px) {
+    .d2d-color-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+.d2d-color-swatch {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 7px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+    min-height: 34px;
+}
+
+.d2d-color-swatch:hover {
+    transform: scale(1.12);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.d2d-color-swatch:active {
+    transform: scale(0.95);
+}
+
+.d2d-color-swatch.active {
+    border-color: #d4af37;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.45);
+}
+
+/* Template cards */
+.d2d-template-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+}
+
+.d2d-template-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1.5px solid rgba(255, 255, 255, 0.07);
+    border-radius: 12px;
+    padding: 14px 10px 10px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.12s;
+    text-align: center;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.d2d-template-card:hover {
+    border-color: rgba(212, 175, 55, 0.35);
+    background: rgba(212, 175, 55, 0.04);
+}
+
+.d2d-template-card:active {
+    transform: scale(0.97);
+}
+
+.d2d-template-card.selected {
+    border-color: #d4af37;
+    background: rgba(212, 175, 55, 0.1);
+    box-shadow: 0 0 16px rgba(212, 175, 55, 0.15);
+}
+
+.d2d-template-card-name {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 8px;
+    color: #ccc;
+}
+
+/* Part list */
+.d2d-part-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.15s;
+    min-height: 44px;
+    /* minimum touch target */
+}
+
+.d2d-part-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.d2d-part-item:active {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.d2d-part-item.selected {
+    background: rgba(212, 175, 55, 0.1);
+    border-left: 3px solid #d4af37;
+}
+
+.d2d-part-color-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    flex-shrink: 0;
+}
+
+.d2d-part-name {
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: capitalize;
+    color: #ccc;
+}
+
+/* Pattern grid */
+.d2d-pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+}
+
+.d2d-pattern-card {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    border: 2px solid transparent;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.12s;
+    position: relative;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.d2d-pattern-card:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.d2d-pattern-card:active {
+    transform: scale(0.95);
+}
+
+.d2d-pattern-card.active {
+    border-color: #d4af37;
+    box-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+}
+
+.d2d-pattern-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.d2d-pattern-card-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 4px 4px 5px;
+    background: rgba(0, 0, 0, 0.72);
+    font-size: 0.58rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-align: center;
+    color: #ccc;
+}
+
+/* Buttons */
+.d2d-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: background 0.18s, transform 0.1s, opacity 0.18s;
+    min-height: 44px;
+    /* touch target */
+    font-family: 'Barlow Condensed', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.d2d-btn:active {
+    transform: scale(0.97);
+}
+
+.d2d-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.d2d-btn-primary {
+    background: #d4af37;
+    color: #000;
+}
+
+.d2d-btn-primary:hover {
+    background: #e5c347;
+}
+
+.d2d-btn-outline {
+    background: transparent;
+    color: #d4af37;
+    border: 1.5px solid rgba(212, 175, 55, 0.4);
+}
+
+.d2d-btn-outline:hover {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: #d4af37;
+}
+
+.d2d-btn-ghost {
+    background: transparent;
+    color: #888;
+}
+
+.d2d-btn-ghost:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.07);
+}
+
+.d2d-btn-danger {
+    background: rgba(220, 53, 69, 0.15);
+    color: #ff6b6b;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.d2d-btn-danger:hover {
+    background: rgba(220, 53, 69, 0.25);
+}
+
+/* Input */
+.d2d-input {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #e5e5e5;
+    font-size: 0.9rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+    min-height: 44px;
+    box-sizing: border-box;
+}
+
+.d2d-input:focus {
+    border-color: #d4af37;
+    background: rgba(212, 175, 55, 0.06);
+}
+
+/* Divider */
+.d2d-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+    margin: 12px 0;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+   ══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+
+    /* Hide desktop sidebar */
+    .d2d-sidebar {
+        display: none;
+    }
+
+    /* Show mobile bottom bar */
+    .d2d-bottom-toolbar {
+        display: flex;
+        align-items: stretch;
+    }
+
+    /* Topbar tweaks */
+    .d2d-topbar {
+        padding: 0 8px;
+        padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    .d2d-topbar-title {
+        font-size: 0.85rem;
+    }
+
+    /* Canvas fills full height between topbar and bottom bar */
+    .d2d-canvas-area {
+        height: 100%;
+    }
+
+    /* Sheet & overlay active states */
+    .d2d-sheet-overlay.open {
+        display: block;
+    }
+
+    .d2d-sheet.open {
+        display: flex;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 375px) {
+    .d2d-tool-btn {
+        min-width: 40px;
+        font-size: 0.5rem;
+    }
+
+    .d2d-tool-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+
+    .d2d-color-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    .d2d-pattern-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Tablet — side-by-side but narrower sidebar */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .d2d-sidebar {
+        width: 260px;
+    }
+}

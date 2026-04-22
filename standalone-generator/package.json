@@ -1,0 +1,38 @@
+{
+    "name": "standalone-ai-generator",
+    "version": "1.0.0",
+    "description": "Standalone Local Generation App for Pak Homies Industry",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev:server": "tsx watch server.ts",
+        "dev:client": "npx vite --port 4004",
+        "dev": "start cmd /k \"npm run dev:server\" && npx vite --port 4004",
+        "build": "vite build"
+    },
+    "dependencies": {
+        "@google/generative-ai": "^0.11.4",
+        "axios": "^1.6.8",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "drizzle-orm": "^0.30.10",
+        "express": "^4.19.2",
+        "form-data": "^4.0.0",
+        "lucide-react": "^0.378.0",
+        "mysql2": "^3.9.7",
+        "nanoid": "^5.0.7",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "ssh2-sftp-client": "^12.0.1"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-react": "^4.2.1",
+        "autoprefixer": "^10.4.19",
+        "postcss": "^8.4.38",
+        "tailwindcss": "^3.4.3",
+        "tsx": "^4.9.3",
+        "typescript": "^5.4.5",
+        "vite": "^5.2.10"
+    }
+}
+

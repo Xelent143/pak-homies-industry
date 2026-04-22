@@ -1,0 +1,55 @@
+name: Post-Create Setup
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    if: github.run_number == 1  # Only run on first push
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+          
+      - name: Check if setup is needed
+        id: check
+        run: |
+          if [ -f ".template-setup-complete" ]; then
+            echo "setup_needed=false" >> $GITHUB_OUTPUT
+          else
+            echo "setup_needed=true" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Install dependencies
+        if: steps.check.outputs.setup_needed == 'true'
+        run: pnpm install
+        
+      - name: Apply template configuration
+        if: steps.check.outputs.setup_needed == 'true'
+        run: pnpm apply-template
+        
+      - name: Mark setup complete
+        if: steps.check.outputs.setup_needed == 'true'
+        run: touch .template-setup-complete
+        
+      - name: Commit template changes
+        if: steps.check.outputs.setup_needed == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git commit -m "chore: apply template configuration" || echo "No changes to commit"
+          git push || echo "Nothing to push"

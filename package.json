@@ -144,7 +144,10 @@
     },
     "onlyBuiltDependencies": [
       "@tailwindcss/oxide",
-      "core-js"
+      "core-js",
+      "esbuild",
+      "sharp",
+      "canvas"
     ]
   }
 }
